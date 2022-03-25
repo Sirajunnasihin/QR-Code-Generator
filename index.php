@@ -124,12 +124,12 @@ if (isset($_POST['codes']) && !empty($_POST['codes'])) {
               <div class="box-body">
                 <div class="row">
                   <div class="col-md-12">
-                    <textarea class="form-control" id="codes" name="codes" rows="15"><?php if (isset($_POST['code']) && !empty($_POST['codes'])) { echo $_POST['codes']; } ?></textarea>
+                    <textarea class="form-control" id="codes" name="codes" rows="15" onchange="setelah_ubah()"><?php if (isset($_POST['code']) && !empty($_POST['codes'])) { echo $_POST['codes']; } ?></textarea>
                   </div>
                 </div>
               </div>
               <div class="box-footer">
-                <button type="submit" class="btn btn-primary pull-right">Generate</button>
+                <button type="submit" id="submit" class="btn btn-primary pull-right" disabled>Generate</button>
               </div>
               <?php if ($status != false) { ?>
                 <div class="alert alert-success alert-dismissible">
@@ -165,6 +165,23 @@ if (isset($_POST['codes']) && !empty($_POST['codes'])) {
   <script src="https://adminlte.io/themes/AdminLTE/bower_components/fastclick/lib/fastclick.js"></script>
   <script src="https://adminlte.io/themes/AdminLTE/dist/js/adminlte.min.js"></script>
   <script src="https://adminlte.io/themes/AdminLTE/dist/js/demo.js"></script>
+
+  <script>
+    function setelah_ubah() {
+      var submitBtn = document.getElementById('submit');
+
+      var text = $("#codes").val();
+      var lines = text.split("\n");
+      var count = lines.length;
+
+      if (count > 0) {
+        submitBtn.disabled=false;
+      } else {
+        submitBtn.disabled=true;
+      }
+      submitBtn.innerHTML = `Generate ${count.toLocaleString()} code${(count !== 1)?'s':''}`;
+    }
+  </script>
 
 </body>
 </html>
