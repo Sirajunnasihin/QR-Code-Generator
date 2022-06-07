@@ -1,37 +1,100 @@
-## Welcome to GitHub Pages
+## Welcome to QR Code Generator
 
-You can use the [editor on GitHub](https://github.com/Sirajunnasihin/QR-Code-Generator/edit/main/README.md) to maintain and preview the content for your website in Markdown files.
+Ini adalah contoh penerapan dari [PHP QR Code Encoder](http://phpqrcode.sourceforge.net/) dengan bulk fungsi pada generate qr code dengan form input dari text area.
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
-
-### Markdown
+### Code
 
 Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
 
 ```markdown
-Syntax highlighted code block
+if (isset($_POST['codes']) && !empty($_POST['codes'])) {
 
-# Header 1
-## Header 2
-### Header 3
+  $PNG_TEMP_DIR = dirname(__FILE__).DIRECTORY_SEPARATOR.'temp'.DIRECTORY_SEPARATOR;
 
-- Bulleted
-- List
+  $PNG_WEB_DIR = 'temp/';
 
-1. Numbered
-2. List
+  include "qrlib.php";    
 
-**Bold** and _Italic_ and `Code` text
+  if (!file_exists($PNG_TEMP_DIR))
+    mkdir($PNG_TEMP_DIR);
 
-[Link](url) and ![Image](src)
+  $errorCorrectionLevel = 'L';
+  $matrixPointSize = 4;
+
+  $list = explode("\n", $_POST['codes']);
+
+  $jumlah = count($list) - 1;
+
+  $akhir = substr($list[$jumlah], 48, 13);
+
+  $zip = new ZipArchive();
+
+  $zipName = substr($list[0], 48, 13).'-'.$akhir;
+
+  if ($zip->open('temp/'.$zipName.'.zip', ZipArchive::CREATE)!==TRUE) {
+
+    $status = false;
+    $msg = 'Cant open path';
+
+  }else{
+
+    foreach ($list as $key => $data) {
+      $just_code = substr($data, 48, 13);
+      $filename = $PNG_TEMP_DIR.$just_code.'.png';
+      QRcode::png($data, $filename, $errorCorrectionLevel, $matrixPointSize, 2);
+
+      $zip->addFile($filename);
+    }
+
+    $status = true;
+    $msg = $zip->status;
+
+  }
+  $zip->close();
+
+  $download_zip = $zipName.'.zip';
+
+}
 ```
 
-For more details see [Basic writing and formatting syntax](https://docs.github.com/en/github/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax).
+dan form sebagai berikut
+```
+<form class="form-horizontal" method="post">
+  <div class="box-header">
+    <h3 class="box-title">Form Generator</h3>
+  </div>
+  <div class="box-body">
+    <div class="row">
+      <div class="col-md-12">
+        <textarea class="form-control" id="codes" name="codes" rows="15" onchange="setelah_ubah()"><?php if (isset($_POST['code']) && !empty($_POST['codes'])) { echo $_POST['codes']; } ?></textarea>
+      </div>
+    </div>
+  </div>
+  <div class="box-footer">
+    <button type="submit" id="submit" class="btn btn-primary pull-right" disabled>Generate</button>
+  </div>
+  <?php if ($status != false) { ?>
+    <div class="alert alert-success alert-dismissible">
+      <h4><i class="icon fa fa-check"></i> Success!</h4>
+      <a href="download.php?file=<?php echo $download_zip; ?>" class="btn btn-success"><i class="fa fa-download"></i> Download</a>
+    </div>
+  <?php } ?>
 
-### Jekyll Themes
+</form>
+<script>
+    function setelah_ubah() {
+      var submitBtn = document.getElementById('submit');
 
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/Sirajunnasihin/QR-Code-Generator/settings/pages). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
+      var text = $("#codes").val();
+      var lines = text.split("\n");
+      var count = lines.length;
 
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://support.github.com/contact) and we’ll help you sort it out.
+      if (count > 0) {
+        submitBtn.disabled=false;
+      } else {
+        submitBtn.disabled=true;
+      }
+      submitBtn.innerHTML = `Generate ${count.toLocaleString()} code${(count !== 1)?'s':''}`;
+    }
+  </script>
+```
