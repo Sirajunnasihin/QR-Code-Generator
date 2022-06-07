@@ -2,7 +2,7 @@
 
 Ini adalah contoh penerapan dari [PHP QR Code Encoder](http://phpqrcode.sourceforge.net/) dengan bulk fungsi pada generate qr code dengan form input dari text area.
 
-### Code
+### How to use
 
 Lakukan pengecekan terhadap value inputan tidak dalam keadaan kosong saat submit
 
