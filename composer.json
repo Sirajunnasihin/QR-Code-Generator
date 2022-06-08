@@ -1,0 +1,19 @@
+{
+    "name": "sirajunnasihin/qr-code-generator",
+    "description": "QR Code generator is library to create qr code qith bulk action",
+    "version": "dev",
+    "license": "GPL-3.0",
+    "authors": [
+        {
+            "name": "Sirajun Nasihin",
+            "email": "therasoftware010@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+
+    },
+    "autoload": {
+        
+    }
+}
